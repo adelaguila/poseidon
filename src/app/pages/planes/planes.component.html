@@ -1,0 +1,158 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-3 py-3">
+            <p-toast></p-toast>
+            <p-table #dt [value]="planes" [lazy]="true" (onLazyLoad)="loadPlanes($event)" dataKey="id"
+                styleClass="p-datatable-sm p-datatable-striped" [tableStyle]="{ 'min-width': '75rem' }"
+                [paginator]="true" [rows]="rows"
+                [totalRecords]="totalRecords" [loading]="loading" [showCurrentPageReport]="true"
+                [rowsPerPageOptions]="rowsPerPageOptions" [scrollable]="true" scrollHeight="600px"
+                currentPageReportTemplate="Mostrando {first} - {last} de {totalRecords} registros">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Mantenimiento de Planes</h5>
+                        <div class="my-2">
+                            <button pButton pRipple label="Nuevo" icon="pi pi-plus"
+                                class="p-button-primary p-button-sm mr-2" (click)="openNew()"></button>
+                            <button pButton pRipple label="Exportar" icon="pi pi-file-excel"
+                                class="p-button-success p-button-sm mr-2" (click)="exportToExcel()"></button>
+                            <button pButton pRipple label="Imprimir" icon="pi pi-print"
+                                class="p-button-secondary p-button-sm" (click)="exportToPdf()"></button>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                        <th pSortableColumn="nombreplan">Nombre del Plan <p-sortIcon field="nombreplan"></p-sortIcon></th>
+                        <th pSortableColumn="preciodia">Precio x Dia <p-sortIcon field="preciodia"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="precioperiodo">Precio x Periodo <p-sortIcon field="precioperiodo"></p-sortIcon></th>
+                        <th pSortableColumn="isActive">Estado <p-sortIcon field="isActive"></p-sortIcon></th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p-columnFilter type="text" field="id" [matchModeOptions]="matchModeOptionsNumber"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th>
+                            <p-columnFilter type="text" field="nombreplan" [matchModeOptions]="matchModeOptionsText"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th>
+                            <p-columnFilter type="text" field="preciodia" [matchModeOptions]="matchModeOptionsNumber"
+                            [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th>
+                            <p-columnFilter type="text" field="precioperiodo" [matchModeOptions]="matchModeOptionsNumber"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th>
+                            <p-columnFilter type="text" field="isActive" [matchModeOptions]="matchModeOptionsNumber"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-plan>
+                    <tr>
+                        <td style="width:10%; min-width:10rem;"><span class="p-column-title">ID</span>
+                            {{plan.id}}
+                        </td>
+                        <td style="width:40%; min-width:10rem;">
+                            <span class="p-column-title">Nombre del Plan</span>
+                            {{plan.nombreplan}}
+                        </td>
+
+                        <td style="width:20%; min-width:8rem;">
+                            <span class="p-column-title">Precio x Dia</span>
+                            {{plan.preciodia | currency:'S/ '}}
+                        </td>
+                        <td style="width:20%; min-width:10rem;">
+                            <span class="p-column-title">Precio x Periodo</span>
+                            {{plan.precioperiodo | currency:'S/ '}}
+                        </td>
+                        <td style="width:20%; min-width:10rem;">
+                            <span class="p-column-title">Estado</span>
+                            <p-tag *ngIf="plan.isActive" severity="success" value="Activado"></p-tag>
+                            <p-tag *ngIf="!plan.isActive" severity="danger" value="Desactivado"></p-tag>
+                        </td>
+
+                        <td style="width:10%; min-width:10rem;">
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-info mr-2 p-button-sm"
+                                    (click)="editPlan(plan)"></button>
+                                <button pButton pRipple icon="pi pi-trash"
+                                    class="p-button-rounded p-button-danger p-button-sm"
+                                    (click)="deletePlan(plan)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="planDialog" [style]="{width: '450px'}" header="Plan Detalles" [modal]="true"
+            class="p-fluid">
+            <ng-template pTemplate="content">
+                <form [formGroup]="planForm">
+                    <div class="formgrid grid" style="display:none">
+                        <div class="field col-3">
+                            <label for="terceroid">ID</label>
+                            <input type="text" pInputText id="planid" formControlName="id" readonly />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="nombretercero">Nombre del Plan</label>
+                        <input type="text" pInputText id="nombreplan" formControlName="nombreplan"
+                            [ngClass]="{'ng-invalid ng-dirty' : isValidField('nombreplan')}" />
+                        <small class="ng-dirty ng-invalid" *ngIf="isValidField('nombreplan')">{{
+                            getFieldError('nombreplan') }} </small>
+                    </div>
+                    <div class="field">
+                        <label for="preciodia">Precio x Dia</label>
+                        <input type="number" pInputText id="preciodia" formControlName="preciodia"
+                            [ngClass]="{'ng-invalid ng-dirty' : isValidField('preciodia')}" />
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField('preciodia')">{{ getFieldError('preciodia') }} </small>
+                    </div>
+                    <div class="field">
+                        <label for="precioperiodo">Precio x Periodo</label>
+                        <input type="number" pInputText id="precioperiodo" formControlName="precioperiodo"
+                            [ngClass]="{'ng-invalid ng-dirty' : isValidField('precioperiodo')}" />
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField('precioperiodo')">{{ getFieldError('precioperiodo') }} </small>
+                    </div>
+                    <div class="field">
+                        <div class="field-radiobutton col-12">
+                            <label for="estado" class="mr-2">Desactivado</label>
+                            <p-inputSwitch id="estado" formControlName="isActive"></p-inputSwitch>
+                            <label for="estado">Activado</label>
+                        </div>
+                    </div>
+                </form>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary"
+                    (click)="savePlan()" [disabled]="planForm.invalid"></button>
+                <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-secondary"
+                    (click)="hideDialog()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deletePlanDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-question-circle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="plan">¿Está seguro que desea eliminar el plan <b>{{plan.nombreplan}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-secondary" label="No"
+                    (click)="deletePlanDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-danger" label="Si, Eliminar"
+                    (click)="confirmDelete()"></button>
+            </ng-template>
+        </p-dialog>
+
+    </div>
+</div>

@@ -1,0 +1,108 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-3 py-3">
+            <p-toast></p-toast>
+            <p-table #dt [value]="vias" [lazy]="true" (onLazyLoad)="loadVias($event)" dataKey="id"
+                styleClass="p-datatable-sm p-datatable-striped" [tableStyle]="{ 'min-width': '75rem' }"
+                [paginator]="true" [rows]="rows"
+                [totalRecords]="totalRecords" [loading]="loading" [showCurrentPageReport]="true"
+                [rowsPerPageOptions]="rowsPerPageOptions" [scrollable]="true" scrollHeight="600px"
+                currentPageReportTemplate="Mostrando {first} - {last} de {totalRecords} registros">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Mantenimiento de Vías</h5>
+                        <div class="my-2">
+                            <button pButton pRipple label="Nuevo" icon="pi pi-plus"
+                                class="p-button-primary p-button-sm mr-2" (click)="openNew()"></button>
+                            <button pButton pRipple label="Exportar" icon="pi pi-file-excel"
+                                class="p-button-success p-button-sm mr-2" (click)="exportToExcel()"></button>
+                            <button pButton pRipple label="Imprimir" icon="pi pi-print"
+                                class="p-button-secondary p-button-sm" (click)="exportToPdf()"></button>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                        <th pSortableColumn="nombrevia">Nombre de Vía <p-sortIcon field="nombrevia"></p-sortIcon></th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p-columnFilter type="text" field="id" [matchModeOptions]="matchModeOptionsNumber"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th>
+                            <p-columnFilter type="text" field="nombrevia" [matchModeOptions]="matchModeOptionsText"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-via>
+                    <tr>
+                        <td style="width:10%; min-width:10rem;"><span class="p-column-title">ID</span>
+                            {{via.id}}
+                        </td>
+                        <td style="width:80%; min-width:10rem;">
+                            <span class="p-column-title">Nombre de Vía</span>
+                            {{via.nombrevia}}
+                        </td>
+                        <td style="width:10%; min-width:10rem;">
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-info mr-2 p-button-sm"
+                                    (click)="editVia(via)"></button>
+                                <button pButton pRipple icon="pi pi-trash"
+                                    class="p-button-rounded p-button-danger p-button-sm"
+                                    (click)="deleteVia(via)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="viaDialog" [style]="{width: '450px'}" header="Vía Detalles" [modal]="true"
+            class="p-fluid">
+            <ng-template pTemplate="content">
+                <form [formGroup]="viaForm">
+                    <div class="formgrid grid" style="display:none">
+                        <div class="field col-3">
+                            <label for="viaid">ID</label>
+                            <input type="text" pInputText id="viaid" formControlName="id" readonly />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="nombrevia">Nombre de Vía</label>
+                        <input type="text" pInputText id="nombrevia" formControlName="nombrevia"
+                            [ngClass]="{'ng-invalid ng-dirty' : isValidField('nombrevia')}" />
+                        <small class="ng-dirty ng-invalid" *ngIf="isValidField('nombrevia')">{{
+                            getFieldError('nombrevia') }} </small>
+                    </div>
+                </form>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary"
+                    (click)="saveVia()" [disabled]="viaForm.invalid"></button>
+                <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-secondary"
+                    (click)="hideDialog()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteViaDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-question-circle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="via">¿Está seguro que desea eliminar la vía <b>{{via.nombrevia}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-secondary" label="No"
+                    (click)="deleteViaDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-danger" label="Si, Eliminar"
+                    (click)="confirmDelete()"></button>
+            </ng-template>
+        </p-dialog>
+
+    </div>
+</div>

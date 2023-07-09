@@ -1,0 +1,151 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-3 py-3">
+            <p-toast></p-toast>
+            <p-table #dt [value]="cajas" [lazy]="true" (onLazyLoad)="loadCajasnap($event)" dataKey="id"
+                styleClass="p-datatable-sm p-datatable-striped" [tableStyle]="{ 'min-width': '75rem' }"
+                [paginator]="true" [rows]="rows"
+                [totalRecords]="totalRecords" [loading]="loading" [showCurrentPageReport]="true"
+                [rowsPerPageOptions]="rowsPerPageOptions" [scrollable]="true" scrollHeight="600px"
+                currentPageReportTemplate="Mostrando {first} - {last} de {totalRecords} registros">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Mantenimiento de Cajas Nap</h5>
+                        <div class="my-2">
+                            <button pButton pRipple label="Nuevo" icon="pi pi-plus"
+                                class="p-button-primary p-button-sm mr-2" (click)="openNew()"></button>
+                            <button pButton pRipple label="Exportar" icon="pi pi-file-excel"
+                                class="p-button-success p-button-sm mr-2" (click)="exportToExcel()"></button>
+                            <button pButton pRipple label="Imprimir" icon="pi pi-print"
+                                class="p-button-secondary p-button-sm" (click)="exportToPdf()"></button>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                        <th pSortableColumn="nombrecajanap">Nombre de Caja Nap <p-sortIcon field="nombrecajanap"></p-sortIcon></th>
+                        <th pSortableColumn="ubicacion">Ubicación <p-sortIcon field="ubicacion"></p-sortIcon></th>
+                        <th pSortableColumn="referencia">Referencia <p-sortIcon field="referencia"></p-sortIcon></th>
+                        <th pSortableColumn="puertos">Puertos <p-sortIcon field="puertos"></p-sortIcon></th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p-columnFilter type="text" field="id" [matchModeOptions]="matchModeOptionsNumber"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th>
+                            <p-columnFilter type="text" field="nombrecajanap" [matchModeOptions]="matchModeOptionsText"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th>
+                            <p-columnFilter type="text" field="ubicacion" [matchModeOptions]="matchModeOptionsText"
+                            [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th>
+                            <p-columnFilter type="text" field="referencia" [matchModeOptions]="matchModeOptionsText"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th>
+                            <p-columnFilter type="text" field="puertos" [matchModeOptions]="matchModeOptionsNumber"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-caja>
+                    <tr>
+                        <td style="width:10%; min-width:10rem;"><span class="p-column-title">ID</span>
+                            {{caja.id}}
+                        </td>
+                        <td style="width:40%; min-width:10rem;">
+                            <span class="p-column-title">Nombre de Caja Nap</span>
+                            {{caja.nombrecajanap}}
+                        </td>
+
+                        <td style="width:20%; min-width:8rem;">
+                            <span class="p-column-title">Ubicación</span>
+                            {{caja.ubicacion}}
+                        </td>
+                        <td style="width:20%; min-width:10rem;">
+                            <span class="p-column-title">Referencia</span>
+                            {{caja.referencia }}
+                        </td>
+                        <td style="width:20%; min-width:10rem;">
+                            <span class="p-column-title">Puertos</span>
+                            {{caja.puertos }}
+                        </td>
+
+                        <td style="width:10%; min-width:10rem;">
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-info mr-2 p-button-sm"
+                                    (click)="editCajanap(caja)"></button>
+                                <button pButton pRipple icon="pi pi-trash"
+                                    class="p-button-rounded p-button-danger p-button-sm"
+                                    (click)="deleteCajanap(caja)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="cajaDialog" [style]="{width: '450px'}" header="Caja Nap Detalles" [modal]="true"
+            class="p-fluid">
+            <ng-template pTemplate="content">
+                <form [formGroup]="cajaForm">
+                    <div class="formgrid grid" style="display:none">
+                        <div class="field col-3">
+                            <label for="cajanapid">ID</label>
+                            <input type="text" pInputText id="cajanapid" formControlName="id" readonly />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="nombrecajanap">Nombre de Caja Nap</label>
+                        <input type="text" pInputText id="nombrecajanap" formControlName="nombrecajanap"
+                            [ngClass]="{'ng-invalid ng-dirty' : isValidField('nombrecajanap')}" />
+                        <small class="ng-dirty ng-invalid" *ngIf="isValidField('nombrecajanap')">{{
+                            getFieldError('nombrecajanap') }} </small>
+                    </div>
+                    <div class="field">
+                        <label for="ubicacion">Ubicación</label>
+                        <input type="text" pInputText id="ubicacion" formControlName="ubicacion" />
+                    </div>
+                    <div class="field">
+                        <label for="referencia">Referencia</label>
+                        <input type="text" pInputText id="referencia" formControlName="referencia"/>
+                    </div>
+                    <div class="field">
+                        <label for="puertos">Puertos</label>
+                        <input type="number" pInputText id="puertos" formControlName="puertos"
+                            [ngClass]="{'ng-invalid ng-dirty' : isValidField('puertos')}" />
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField('puertos')">{{ getFieldError('puertos') }} </small>
+                    </div>
+                </form>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary"
+                    (click)="saveCajanap()" [disabled]="cajaForm.invalid"></button>
+                <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-secondary"
+                    (click)="hideDialog()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteCajanapDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-question-circle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="caja">¿Está seguro que desea eliminar la caja nap <b>{{caja.nombrecajanap}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-secondary" label="No"
+                    (click)="deleteCajanapDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-danger" label="Si, Eliminar"
+                    (click)="confirmDelete()"></button>
+            </ng-template>
+        </p-dialog>
+
+    </div>
+</div>

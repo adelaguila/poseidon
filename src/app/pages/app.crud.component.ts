@@ -4,6 +4,7 @@ import {ProductService} from '../demo/service/productservice';
 import {ConfirmationService, MessageService} from 'primeng/api';
 import {AppBreadcrumbService} from '../app.breadcrumb.service';
 import { Table } from 'primeng/table';
+import { Subject } from 'rxjs';
 
 @Component({
     templateUrl: './app.crud.component.html',
@@ -31,6 +32,9 @@ export class AppCrudComponent implements OnInit {
     statuses: any[] = [];
 
     rowsPerPageOptions = [5, 10, 20];
+
+    typeHeadFilter = new Subject<any[]>();
+    typeHeadFilterFire = new Subject<string>();
 
     constructor(private productService: ProductService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
 
@@ -139,5 +143,6 @@ export class AppCrudComponent implements OnInit {
 
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+
     }
 }

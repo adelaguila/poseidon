@@ -1,0 +1,237 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <p-toast></p-toast>
+            <h5>Actualizar Clientes / Proveedores</h5>
+            <p-toolbar>
+                <div class="p-toolbar-group-left flex flex-wrap">
+                    <button pButton type="button" label="Guardar Cambios" icon="pi pi-save" class="mr-2"
+                        (click)="saveTercero()"></button>
+                    <i class="pi pi-bars p-toolbar-separator"></i>
+                    <button pButton type="button" label="Agregar Dirección" icon="pi pi-map-marker"
+                        class="p-button-secondary mr-2" (click)="openNewDireccion()"></button>
+                    <button pButton type="button" label="Agregar Área / Proyecto" icon="pi pi-sitemap"
+                        class="p-button-secondary mr-2" (click)="openNewArea()"></button>
+                    <button pButton type="button" label="Ir a lista" icon="pi pi-table"
+                        class="p-button-secondary mr-2" (click)="toLista()"></button>
+                </div>
+            </p-toolbar>
+        </div>
+    </div>
+    <div class="col-12 md:col-6">
+        <div class="card p-fluid">
+            <h5>Datos Generales</h5>
+            <form [formGroup]="terceroForm">
+                <div class="formgrid grid">
+                    <div class="field col-3">
+                        <label for="terceroid">ID</label>
+                        <input type="text" pInputText id="terceroid" formControlName="id" readonly />
+                    </div>
+                    <div class="field col-3">
+                        <label for="tipodoi">DOI</label>
+                        <p-dropdown [options]="tiposDoi" formControlName="tipodoi" optionLabel="tipo"
+                            optionValue="codigo"></p-dropdown>
+                    </div>
+                    <div class="field col-6">
+                        <label for="codigo">Número DOI</label>
+                        <div class="p-inputgroup">
+                            <input type="text" pInputText id="numerodoi" formControlName="numerodoi"
+                                [ngClass]="{'ng-invalid ng-dirty' : isValidField(terceroForm,'numerodoi')}" />
+
+                            <button type="button" pButton icon="pi pi-search" (click)="buscarMigo()"
+                                styleClass="p-button-warn"></button>
+                        </div>
+                        <small class="ng-dirty ng-invalid" *ngIf="isValidField(terceroForm,'numerodoi')">{{
+                            getFieldError(terceroForm, 'numerodoi') }} </small>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="nombretercero">Nombre</label>
+                    <input type="text" pInputText id="nombretercero" formControlName="nombretercero"
+                        [ngClass]="{'ng-invalid ng-dirty' : isValidField(terceroForm,'nombretercero')}" />
+                    <small class="ng-dirty ng-invalid" *ngIf="isValidField(terceroForm, 'nombretercero')">{{
+                        getFieldError(terceroForm, 'nombretercero') }} </small>
+                </div>
+                <div class="field">
+                    <label for="correo">Correo</label>
+                    <input type="text" pInputText id="correo" formControlName="correo" />
+                </div>
+                <div class="field">
+                    <label for="correo">Teléfono</label>
+                    <input type="text" pInputText id="telefono" formControlName="telefono" />
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="col-12 md:col-6">
+        <div class="card p-fluid">
+            <h5>Direcciones Registradas</h5>
+            <p-table #dt1 [value]="tercero.direcciones" dataKey="id" [rows]="10" [rowHover]="true"
+                styleClass="p-datatable-gridlines" responsiveLayout="scroll">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>
+                            <div class="flex justify-content-between align-items-center">
+                                Direccion
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex justify-content-between align-items-center">
+                                Ubigeo
+                            </div>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-direccion>
+                    <tr>
+                        <td style="min-width: 12rem;">
+                            {{direccion.direccion}}
+                        </td>
+                        <td style="min-width: 12rem;">
+                            {{direccion.ubigeo.distrito}} - {{direccion.ubigeo.provincia}} -
+                            {{direccion.ubigeo.departamento}}
+                        </td>
+                        <td style="width:10%; min-width:10rem;">
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-info mr-2 p-button-sm"
+                                    (click)="editTerceroDireccion(direccion)"></button>
+                                <button pButton pRipple icon="pi pi-trash"
+                                    class="p-button-rounded p-button-danger p-button-sm"
+                                    (click)="deleteTerceroDireccion(direccion)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <div class="card">
+            <h5>Areas / Proyectos Registrados</h5>
+            <p-table #dt1 [value]="tercero.areas" dataKey="id" [rows]="10" [rowHover]="true"
+                styleClass="p-datatable-gridlines" responsiveLayout="scroll">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>
+                            <div class="flex justify-content-between align-items-center">
+                                Area / Proyecto
+                            </div>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-area>
+                    <tr>
+                        <td style="min-width: 12rem;">
+                            {{area.area}}
+                        </td>
+                        <td style="width:10%; min-width:10rem;">
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-info mr-2 p-button-sm"
+                                    (click)="editTerceroArea(area)"></button>
+                                <button pButton pRipple icon="pi pi-trash"
+                                    class="p-button-rounded p-button-danger p-button-sm"
+                                    (click)="deleteTerceroArea(area)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+
+    <p-dialog [(visible)]="direccionDialog" [style]="{width: '550px', height: '350px'}" header="Formulario Dirección"
+        [modal]="true" class="p-fluid">
+
+        <ng-template pTemplate="content">
+            <form [formGroup]="direccionForm">
+                <div class="field">
+                    <label for="direccion">Dirección</label>
+                    <input type="text" pInputText id="direccion" formControlName="direccion"
+                        [ngClass]="{'ng-invalid ng-dirty' : isValidField(direccionForm,'direccion')}" />
+                    <small class="ng-dirty ng-invalid" *ngIf="isValidField(direccionForm,'direccion')">{{
+                        getFieldError(direccionForm, 'direccion') }} </small>
+                </div>
+                <div class="field">
+                    <label for="ubigeo">Ubigeo</label>
+                    <p-autoComplete formControlName="ubigeo" [suggestions]="ubigeosFiltrados"
+                        (completeMethod)="filtrarUbigeos($event)" field="nombreUbigeo" [minLength]="3"
+                        [forceSelection]="true"
+                        [ngClass]="{'ng-invalid ng-dirty' : isValidField(direccionForm,'ubigeo')}">
+                        <ng-template let-ubigeo pTemplate="item">
+                            <div>{{ ubigeo.distrito }} - {{ ubigeo.provincia }} - {{ ubigeo.departamento }}</div>
+                        </ng-template>
+                    </p-autoComplete>
+                    <small class="ng-dirty ng-invalid" *ngIf="isValidField(direccionForm, 'ubigeo')">{{
+                        getFieldError(direccionForm, 'ubigeo') }} </small>
+                </div>
+            </form>
+        </ng-template>
+
+
+        <ng-template pTemplate="footer">
+            <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary"
+                (click)="saveDireccion()" [disabled]="direccionForm.invalid"></button>
+            <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-secondary"
+                (click)="hideDialog()"></button>
+        </ng-template>
+
+    </p-dialog>
+
+    <p-dialog [(visible)]="deleteDireccionDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-question-circle mr-3" style="font-size: 2rem"></i>
+            <span *ngIf="terceroDireccion">¿Está seguro que desea eliminar la dirección
+                <b>{{terceroDireccion.direccion}}</b>?</span>
+        </div>
+        <ng-template pTemplate="footer">
+            <button pButton pRipple icon="pi pi-times" class="p-button-secondary" label="No"
+                (click)="deleteDireccionDialog = false"></button>
+            <button pButton pRipple icon="pi pi-check" class="p-button-danger" label="Si, Eliminar"
+                (click)="confirmDeleteDireccion()"></button>
+        </ng-template>
+    </p-dialog>
+
+    <p-dialog [(visible)]="areaDialog" [style]="{width: '550px'}" header="Formulario Area" [modal]="true"
+        class="p-fluid">
+
+        <ng-template pTemplate="content">
+            <form [formGroup]="areaForm">
+                <div class="field">
+                    <label for="direccion">Area</label>
+                    <input type="text" pInputText id="area" formControlName="area"
+                        [ngClass]="{'ng-invalid ng-dirty' : isValidField(areaForm,'area')}" />
+                    <small class="ng-dirty ng-invalid" *ngIf="isValidField(areaForm,'area')">{{
+                        getFieldError(areaForm, 'area') }} </small>
+                </div>
+            </form>
+        </ng-template>
+
+
+        <ng-template pTemplate="footer">
+            <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary" (click)="saveArea()"
+                [disabled]="areaForm.invalid"></button>
+            <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-secondary"
+                (click)="hideDialog()"></button>
+        </ng-template>
+
+    </p-dialog>
+
+    <p-dialog [(visible)]="deleteAreaDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-question-circle mr-3" style="font-size: 2rem"></i>
+            <span *ngIf="terceroDireccion">¿Está seguro que desea eliminar el área / proyecto
+                <b>{{terceroArea.area}}</b>?</span>
+        </div>
+        <ng-template pTemplate="footer">
+            <button pButton pRipple icon="pi pi-times" class="p-button-secondary" label="No"
+                (click)="deleteAreaDialog = false"></button>
+            <button pButton pRipple icon="pi pi-check" class="p-button-danger" label="Si, Eliminar"
+                (click)="confirmDeleteArea()"></button>
+        </ng-template>
+    </p-dialog>
+</div>
