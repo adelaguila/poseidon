@@ -111,11 +111,8 @@
                         </td>
                         <td>
                             <div class="flex">
-                                <button pButton pRipple icon="pi pi-pencil"
-                                    class="p-button-rounded p-button-success mr-2"
-                                    (click)="editUsuario(usuario)"></button>
-                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning"
-                                    (click)="deleteUsuario(usuario)"></button>
+                                <p-button icon="pi pi-pencil" styleClass="p-button-info p-button-text" (click)="editUsuario(usuario)"></p-button>
+                                <p-button icon="pi pi-trash" styleClass="p-button-danger p-button-text" (click)="deleteUsuario(usuario)"></p-button>
                             </div>
                         </td>
                     </tr>

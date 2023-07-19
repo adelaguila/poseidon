@@ -79,12 +79,8 @@
 
                         <td style="width:10%; min-width:10rem;">
                             <div class="flex">
-                                <button pButton pRipple icon="pi pi-pencil"
-                                    class="p-button-rounded p-button-info mr-2 p-button-sm"
-                                    (click)="editCajanap(caja)"></button>
-                                <button pButton pRipple icon="pi pi-trash"
-                                    class="p-button-rounded p-button-danger p-button-sm"
-                                    (click)="deleteCajanap(caja)"></button>
+                                <p-button icon="pi pi-pencil" styleClass="p-button-info p-button-text" (click)="editCajanap(caja)"></p-button>
+                                <p-button icon="pi pi-trash" styleClass="p-button-danger p-button-text" (click)="deleteCajanap(caja)"></p-button>
                             </div>
                         </td>
                     </tr>

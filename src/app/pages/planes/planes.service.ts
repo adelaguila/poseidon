@@ -54,6 +54,12 @@ export class PlanesService {
             );
     }
 
+    getPlanesSelect(){
+        return this.http.get(`${api_url}/planes/lista`, {
+            context: checkToken(),
+        });
+    }
+
     createPlan(plan: PlanInterface) {
         return this.http.post(`${api_url}/planes`, plan, {
             context: checkToken(),

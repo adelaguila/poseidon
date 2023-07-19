@@ -52,6 +52,12 @@ export class CajasnapService {
             );
     }
 
+    getCajasnapSelect(){
+        return this.http.get(`${api_url}/cajanap/lista`, {
+            context: checkToken(),
+        });
+    }
+
     createCajanap(caja: CajanapInterface) {
         return this.http.post(`${api_url}/cajanap`, caja, {
             context: checkToken(),

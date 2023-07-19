@@ -4,10 +4,9 @@
             <p-toast></p-toast>
             <p-table #dt [value]="abonados" [lazy]="true" (onLazyLoad)="loadAbonados($event)" dataKey="id"
                 styleClass="p-datatable-sm p-datatable-striped" [tableStyle]="{ 'min-width': '75rem' }"
-                [paginator]="true" [rows]="rows"
-                [totalRecords]="totalRecords" [loading]="loading" [showCurrentPageReport]="true"
-                [rowsPerPageOptions]="rowsPerPageOptions" [scrollable]="true" scrollHeight="600px"
-                currentPageReportTemplate="Mostrando {first} - {last} de {totalRecords} registros">
+                [paginator]="true" [rows]="rows" [totalRecords]="totalRecords" [loading]="loading"
+                [showCurrentPageReport]="true" [rowsPerPageOptions]="rowsPerPageOptions" [scrollable]="true"
+                scrollHeight="600px" currentPageReportTemplate="Mostrando {first} - {last} de {totalRecords} registros">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                         <h5 class="m-0">Mantenimiento de Abonados</h5>
@@ -23,173 +22,274 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
-                        <th pSortableColumn="numerodoi">Número DOI <p-sortIcon field="numerodoi"></p-sortIcon></th>
-                        <th pSortableColumn="nombretercero">Nombre Abonado <p-sortIcon field="nombretercero"></p-sortIcon></th>
-                        <th pSortableColumn="nombresector">Sector <p-sortIcon field="nombresector"></p-sortIcon></th>
-                        <th pSortableColumn="via">Via <p-sortIcon field="via"></p-sortIcon></th>
-                        <th pSortableColumn="numero">Numero <p-sortIcon field="numero"></p-sortIcon></th>
-                        <th pSortableColumn="referencia">Referencia <p-sortIcon field="referencia"></p-sortIcon></th>
-                        <th pSortableColumn="nombreplan">Plan <p-sortIcon field="nombreplan"></p-sortIcon></th>
-                        <th pSortableColumn="nombrecajanap">Caja Nap <p-sortIcon field="nombrecajanap"></p-sortIcon></th>
-                        <th pSortableColumn="estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
-                        <th></th>
+                        <th style="min-width:80px;" pFrozenColumn></th>
+                        <th style="min-width:120px;" pSortableColumn="id" pFrozenColumn>ID <p-sortIcon
+                                field="id"></p-sortIcon></th>
+                        <th style="min-width:150px;" pSortableColumn="tercero.numerodoi">Número DOI <p-sortIcon
+                                field="tercero.numerodoi"></p-sortIcon></th>
+                        <th style="min-width:400px;" pSortableColumn="tercero.nombretercero">Nombre Abonado <p-sortIcon
+                                field="tercero.nombretercero"></p-sortIcon></th>
+                        <th style="min-width:200px;" pSortableColumn="sector.nombresector">Sector <p-sortIcon
+                                field="sector.nombresector"></p-sortIcon></th>
+                        <th style="min-width:200px;" pSortableColumn="via.nombrevia">Via <p-sortIcon field="via.nombrevia"></p-sortIcon>
+                        </th>
+                        <th style="min-width:200px;" pSortableColumn="plan.nombreplan">Plan <p-sortIcon
+                                field="plan.nombreplan"></p-sortIcon></th>
+                        <th style="min-width:200px;" pSortableColumn="cajanap.nombrecajanap">Caja Nap <p-sortIcon
+                                field="cajanap.nombrecajanap"></p-sortIcon></th>
+                        <th style="min-width:100px;" pSortableColumn="estado" pFrozenColumn>Estado <p-sortIcon
+                                field="estado"></p-sortIcon></th>
+
                     </tr>
                     <tr>
-                        <th>
+                        <th pFrozenColumn></th>
+                        <th pFrozenColumn>
                             <p-columnFilter type="text" field="id" [matchModeOptions]="matchModeOptionsNumber"
                                 [matchMode]="'startsWith'"></p-columnFilter>
                         </th>
                         <th>
-                            <p-columnFilter type="text" field="numerodoi" [matchModeOptions]="matchModeOptionsText"
+                            <p-columnFilter type="text" field="tercero.numerodoi" [matchModeOptions]="matchModeOptionsText"
                                 [matchMode]="'startsWith'"></p-columnFilter>
                         </th>
                         <th>
-                            <p-columnFilter type="text" field="nombretercero" [matchModeOptions]="matchModeOptionsText"
+                            <p-columnFilter type="text" field="tercero.nombretercero" [matchModeOptions]="matchModeOptionsText"
                                 [matchMode]="'startsWith'"></p-columnFilter>
                         </th>
                         <th>
-                            <p-columnFilter type="text" field="nombresector" [matchModeOptions]="matchModeOptionsText"
+                            <p-columnFilter type="text" field="sector.nombresector" [matchModeOptions]="matchModeOptionsText"
                                 [matchMode]="'startsWith'"></p-columnFilter>
                         </th>
                         <th>
-                            <p-columnFilter type="text" field="nombrevia" [matchModeOptions]="matchModeOptionsText"
+                            <p-columnFilter type="text" field="via.nombrevia" [matchModeOptions]="matchModeOptionsText"
                                 [matchMode]="'startsWith'"></p-columnFilter>
                         </th>
-                        <th></th>
-                        <th></th>
+                        <!-- <th></th> -->
                         <th>
-                            <p-columnFilter type="text" field="nombreplan" [matchModeOptions]="matchModeOptionsText"
-                                [matchMode]="'startsWith'"></p-columnFilter>
-                        </th>
-                        <th>
-                            <p-columnFilter type="text" field="nombrecajanap" [matchModeOptions]="matchModeOptionsText"
+                            <p-columnFilter type="text" field="plan.nombreplan" [matchModeOptions]="matchModeOptionsText"
                                 [matchMode]="'startsWith'"></p-columnFilter>
                         </th>
                         <th>
-                            <p-columnFilter type="text" field="estado" [matchModeOptions]="matchModeOptionsText"
+                            <p-columnFilter type="text" field="cajanap.nombrecajanap" [matchModeOptions]="matchModeOptionsText"
                                 [matchMode]="'startsWith'"></p-columnFilter>
                         </th>
-                        <th></th>
+                        <th pFrozenColumn>
+                            <p-columnFilter field="estado" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown appendTo="body" [ngModel]="value" [options]="estados" (onChange)="filter($event.value)"
+                                        placeholder="Seleccionar" [showClear]="true">
+                                        <ng-template let-option pTemplate="item">
+                                            <p-tag [value]="option.value"
+                                                [severity]="getSeverity(option.label)"></p-tag>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+                        </th>
+
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-abonado>
                     <tr>
-                        <td style="width:10%; min-width:10rem;"><span class="p-column-title">ID</span>
+                        <td pFrozenColumn>
+                            <div class="flex" style="background-color: #F6F9FE;">
+                                <p-button pTooltip="Procesar" icon="pi pi-cog" styleClass="p-button-info p-button-text"
+                                    (click)="editAbonado(abonado)"></p-button>
+                                <p-button pTooltip="Eliminar" icon="pi pi-trash" styleClass="p-button-danger p-button-text"
+                                    (click)="deleteAbonado(abonado)"></p-button>
+                            </div>
+                        </td>
+                        <td pFrozenColumn><span class="p-column-title">ID</span>
                             {{abonado.id}}
                         </td>
-                        <td style="width:10%; min-width:10rem;">
+                        <td>
                             <span class="p-column-title">Numero DOI</span>
                             {{abonado.tercero.numerodoi}}
                         </td>
 
-                        <td style="width:20%; min-width:8rem;">
+                        <td>
                             <span class="p-column-title">Nombre Abonado</span>
                             {{abonado.tercero.nombretercero}}
                         </td>
-                        <td style="width:20%; min-width:10rem;">
+                        <td>
                             <span class="p-column-title">Sector</span>
                             {{abonado.sector.nombresector}}
                         </td>
-                        <td style="width:20%; min-width:10rem;">
+                        <td>
                             <span class="p-column-title">Vía</span>
-                            {{abonado.via.nombrevia}}
+                            {{abonado.vianumero}}
                         </td>
-                        <td style="width:10%; min-width:10rem;">
-                            <span class="p-column-title">Número</span>
-                            {{abonado.numero}}
-                        </td>
-                        <td style="width:10%; min-width:10rem;">
-                            <span class="p-column-title">Referencia</span>
-                            {{abonado.referencia}}
-                        </td>
-                        <td style="width:20%; min-width:10rem;">
+                        <td>
                             <span class="p-column-title">Plan</span>
                             {{abonado.plan.nombreplan}}
                         </td>
-                        <td style="width:20%; min-width:10rem;">
+                        <td>
                             <span class="p-column-title">Caja Nap</span>
                             {{abonado.cajanap.nombrecajanap}}
                         </td>
-                        <td style="width:10%; min-width:10rem;">
+                        <td>
                             <span class="p-column-title">Estado</span>
-                            {{abonado.estado}}
+                            <p-tag [value]="abonado.estado" [severity]="getSeverity(abonado.estado)"></p-tag>
                         </td>
-                        <td style="width:10%; min-width:10rem;">
-                            <div class="flex">
-                                <button pButton pRipple icon="pi pi-pencil"
-                                    class="p-button-rounded p-button-info mr-2 p-button-sm"
-                                    (click)="editAbonado(abonado)"></button>
-                                <button pButton pRipple icon="pi pi-trash"
-                                    class="p-button-rounded p-button-danger p-button-sm"
-                                    (click)="deleteAbonado(abonado)"></button>
-                            </div>
-                        </td>
+
                     </tr>
                 </ng-template>
             </p-table>
         </div>
 
-        <p-dialog [(visible)]="abonadoDialog" [style]="{width: '550px'}" header="Formularios Abonados"
-            [modal]="true" class="p-fluid">
+        <p-dialog [(visible)]="abonadoDialog" [style]="{width: '600px'}" header="Nuevo Abonado" [modal]="true"
+            class="p-fluid">
 
             <ng-template pTemplate="content">
                 <form [formGroup]="abonadoForm">
-                    <div class="formgrid grid">
-                        <div class="field col-3">
-                            <label for="terceroid">ID</label>
-                            <input type="text" pInputText id="terceroid" formControlName="id" readonly
-                                [ngClass]="{'ng-invalid ng-dirty' : submitted && !id}" />
+                    <!-- <p-fieldset legend="Datos del Abonado"> -->
+                    <div class="field grid">
+                        <label htmlFor="abonadoid" class="col-12 mb-2 md:col-1 md:mb-0">ID</label>
+                        <div class="col-12 md:col-2">
+                            <input type="number" pInputText id="abonadoid" formControlName="id" readonly />
+                            <input type="hidden" pInputText id="terceroid" formControlName="terceroId" readonly />
                         </div>
-                        <div class="field col-3">
-                            <label for="tipodoi">DOI</label>
-                            <p-dropdown [options]="tiposDoi" formControlName="tipodoi" optionLabel="tipo"
-                                optionValue="codigo"></p-dropdown>
+
+                        <label htmlFor="tipodoi" class="col-12 mb-2 md:col-2 md:mb-0">DOI Nro.</label>
+                        <div class="col-12 md:col-3">
+                            <p-dropdown [options]="tiposDoi" id="tipodoi" formControlName="tipodoi" optionLabel="tipo"
+                                optionValue="codigo" [readonly]="nuevoabonado"></p-dropdown>
                         </div>
-                        <div class="field col-6">
-                            <label for="codigo">Número DOI</label>
+
+                        <div class="col-12 md:col-4">
                             <div class="p-inputgroup">
                                 <input type="text" pInputText id="numerodoi" formControlName="numerodoi"
-                                    [ngClass]="{'ng-invalid ng-dirty' : isValidField('numerodoi')}" />
-
+                                    [readonly]="nuevoabonado"
+                                    [ngClass]="{'ng-invalid ng-dirty' : isValidField(abonadoForm,'numerodoi')}" />
                                 <button type="button" pButton icon="pi pi-search" (click)="buscarMigo()"
-                                    styleClass="p-button-warn"></button>
+                                    styleClass="p-button-warn" [disabled]="nuevoabonado"></button>
                             </div>
-                            <small class="ng-dirty ng-invalid" *ngIf="isValidField('numerodoi')">{{ getFieldError('numerodoi') }} </small>
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField(abonadoForm,'numerodoi')">{{
+                                getFieldError(abonadoForm, 'numerodoi') }} </small>
                         </div>
                     </div>
-                    <div class="field">
-                        <label for="nombretercero">Nombre</label>
-                        <input type="text" pInputText id="nombretercero" formControlName="nombretercero"
-                            [ngClass]="{'ng-invalid ng-dirty' : isValidField('nombretercero')}" />
-                        <small class="ng-dirty ng-invalid" *ngIf="isValidField('nombretercero')">{{
-                            getFieldError('nombretercero') }} </small>
+
+                    <div class="field grid">
+                        <label htmlFor="nombretercero" class="col-12 mb-2 md:col-3 md:mb-0">Nombre Cliente</label>
+                        <div class="col-12 md:col-9">
+                            <input type="text" pInputText id="nombretercero" formControlName="nombretercero"
+                                [ngClass]="{'ng-invalid ng-dirty' : isValidField(abonadoForm,'nombretercero')}"
+                                [readonly]="nuevoabonado" />
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField(abonadoForm, 'nombretercero')">{{
+                                getFieldError(abonadoForm, 'nombretercero') }} </small>
+                        </div>
                     </div>
-                    <div class="field">
-                        <label for="direccion">Dirección</label>
-                        <input type="text" pInputText id="direccion" formControlName="direccion"
-                            [ngClass]="{'ng-invalid ng-dirty' : isValidField('direccion')}" />
-                            <small class="ng-dirty ng-invalid" *ngIf="isValidField('direccion')">{{ getFieldError('direccion') }} </small>
+                    <div class="formgrid grid">
+                        <div class="field col-6">
+                            <label for="direccion">Dirección</label>
+                            <input type="text" pInputText id="direccion" formControlName="direccion"
+                                [ngClass]="{'ng-invalid ng-dirty' : isValidField(abonadoForm,'direccion')}"
+                                [readonly]="nuevoabonado" />
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField(abonadoForm, 'direccion')">{{
+                                getFieldError(abonadoForm, 'direccion') }} </small>
+
+                        </div>
+                        <div class="field col-6">
+                            <label for="ubigeo">Ubigeo</label>
+                            <p-autoComplete formControlName="ubigeo" id="ubigeo" [suggestions]="ubigeosFiltrados"
+                                (completeMethod)="filtrarUbigeos($event)" field="nombreUbigeo" [minLength]="3"
+                                [forceSelection]="true"
+                                [ngClass]="{'ng-invalid ng-dirty' : isValidField(abonadoForm, 'ubigeo')}"
+                                [readonly]="nuevoabonado">
+                                <ng-template let-ubigeo pTemplate="item">
+                                    <div>{{ ubigeo.distrito }} - {{ ubigeo.provincia }} - {{ ubigeo.departamento }}
+                                    </div>
+                                </ng-template>
+                            </p-autoComplete>
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField(abonadoForm, 'ubigeo')">{{
+                                getFieldError('ubigeo') }} </small>
+                        </div>
+
                     </div>
-                    <div class="field">
-                        <label for="ubigeo">Ubigeo</label>
-                        <p-autoComplete formControlName="ubigeo" [suggestions]="ubigeosFiltrados"
-                            (completeMethod)="filtrarUbigeos($event)" field="nombreUbigeo" [minLength]="3"
-                            [forceSelection]="true" [ngClass]="{'ng-invalid ng-dirty' : isValidField('ubigeo')}" >
-                            <ng-template let-ubigeo pTemplate="item">
-                                <div>{{ ubigeo.distrito }} - {{ ubigeo.provincia }} - {{ ubigeo.departamento }}</div>
-                            </ng-template>
-                        </p-autoComplete>
-                        <small class="ng-dirty ng-invalid" *ngIf="isValidField('ubigeo')">{{ getFieldError('ubigeo') }} </small>
+
+                    <div class="field grid">
+                        <label htmlFor="correo" class="col-12 mb-2 md:col-2 md:mb-0">Correo</label>
+                        <div class="col-12 md:col-4">
+                            <input type="text" pInputText id="correo" formControlName="correo" [readonly]="nuevoabonado" />
+                        </div>
+                        <label htmlFor="telefono" class="col-12 mb-2 md:col-2 md:mb-0">Teléfono</label>
+                        <div class="col-12 md:col-4">
+                            <input type="text" pInputText id="telefono" formControlName="telefono"
+                                [readonly]="nuevoabonado" />
+                        </div>
                     </div>
-                    <div class="field">
-                        <label for="correo">Correo</label>
-                        <input type="text" pInputText id="correo" formControlName="correo"/>
+                    <!-- <hr> -->
+                    <div class="formgrid grid">
+                        <div class="field col-4">
+                            <label for="sectorId">Sector</label>
+                            <p-dropdown appendTo="body" [options]="sectores" formControlName="sector" id="sectorId"
+                                optionLabel="nombresector" placeholder="Selecciona un sector" optionValue="id"
+                                [ngClass]="{'ng-invalid ng-dirty' : isValidField(abonadoForm,'sector')}"></p-dropdown>
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField(abonadoForm, 'sector')">{{
+                                getFieldError(abonadoForm, 'sector') }} </small>
+                        </div>
+                        <div class="field col-6">
+                            <label for="viaId">Vía</label>
+                            <p-dropdown appendTo="body" [options]="vias" formControlName="via" id="viaId" optionLabel="nombrevia"
+                                placeholder="Selecciona una vía" [filter]="true" filterBy="nombrevia" [showClear]="true"
+                                optionValue="id"
+                                [ngClass]="{'ng-invalid ng-dirty' : isValidField(abonadoForm,'sector')}"></p-dropdown>
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField(abonadoForm, 'via')">{{
+                                getFieldError(abonadoForm, 'via') }} </small>
+                        </div>
+                        <div class="field col-2">
+                            <label for="numero">Número</label>
+                            <input type="text" pInputText id="numero" formControlName="numero"
+                                [ngClass]="{'ng-invalid ng-dirty' : isValidField(abonadoForm,'numero')}" />
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField(abonadoForm, 'numero')">{{
+                                getFieldError(abonadoForm, 'numero') }} </small>
+                        </div>
                     </div>
-                    <div class="field">
-                        <label for="correo">Teléfono</label>
-                        <input type="text" pInputText id="telefono" formControlName="telefono"/>
+                    <div class="formgrid grid">
+                        <div class="field col-4">
+                            <label for="referencia">Referencia</label>
+                            <input type="text" pInputText id="referencia" formControlName="referencia" />
+
+                        </div>
+                        <div class="field col-4">
+                            <label for="planId">Plan</label>
+                            <p-dropdown appendTo="body" [options]="planes" id="planId" formControlName="plan" optionLabel="nombreplan"
+                                placeholder="Selecciona un plan" optionValue="id" [filter]="true" filterBy="nombreplan"
+                                [showClear]="true" [ngClass]="{'ng-invalid ng-dirty' : isValidField(abonadoForm,'plan')}"
+                                [readonly]="nuevoabonado"></p-dropdown>
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField(abonadoForm, 'plan')">{{
+                                getFieldError(abonadoForm, 'plan') }} </small>
+                        </div>
+                        <div class="field col-4">
+                            <label for="cajanapId">Caja Nap</label>
+                            <p-dropdown appendTo="body" [options]="cajasnap" id="cajanapId" formControlName="cajanap"
+                                optionLabel="nombrecajanap" placeholder="Selecciona una caja nap" optionValue="id"
+                                [ngClass]="{'ng-invalid ng-dirty' : isValidField(abonadoForm,'cajanap')}"></p-dropdown>
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField(abonadoForm, 'cajanap')">{{
+                                getFieldError(abonadoForm, 'cajanap') }} </small>
+                        </div>
                     </div>
+                    <div class="formgrid grid">
+                        <div class="field col-4">
+                            <label for="ont">Serie ONT</label>
+                            <input type="text" pInputText id="ont" formControlName="ont" />
+                        </div>
+                        <div class="field col-4">
+                            <label for="fecharegistro">Fecha Registro</label>
+                            <input type="date" pInputText id="fecharegistro" formControlName="fecharegistro"
+                                [readonly]="nuevoabonado" />
+                        </div>
+                        <div class="field col-4">
+                            <label for="vendedorId">Vendedor</label>
+                            <p-dropdown appendTo="body" [options]="vendedores" formControlName="vendedor" optionLabel="fullName"
+                                optionValue="id" placeholder="Selecciona un vendedor"
+                                [ngClass]="{'ng-invalid ng-dirty' : isValidField(abonadoForm,'vendedor')}"></p-dropdown>
+                            <small class="ng-dirty ng-invalid" *ngIf="isValidField(abonadoForm, 'vendedor')">{{
+                                getFieldError(abonadoForm, 'vendedor') }} </small>
+                        </div>
+
+                    </div>
+
+                    <!-- </p-fieldset> -->
                 </form>
             </ng-template>
 

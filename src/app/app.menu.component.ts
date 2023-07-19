@@ -24,9 +24,9 @@ export class AppMenuComponent implements OnInit {
                 ]
             },
             {
-                label: 'Operaciones', icon: 'pi pi-fw pi-table',
+                label: 'Operaciones', icon: 'pi pi-fw pi-microsoft',
                 items: [
-                    {label: 'Abonados', icon: 'pi pi-fw pi-map', routerLink: ['/admin/abonados']},
+                    {label: 'Abonados', icon: 'pi pi-fw pi-globe', routerLink: ['/admin/abonados']},
                 ]
             },
             {
@@ -36,6 +36,7 @@ export class AppMenuComponent implements OnInit {
                     {label: 'Cajas Nap', icon: 'pi pi-fw pi-box', routerLink: ['/admin/cajasnap']},
                     {label: 'Planes', icon: 'pi pi-fw pi-book', routerLink: ['/admin/planes']},
                     {label: 'Sectores', icon: 'pi pi-fw pi-sitemap', routerLink: ['/admin/sectores']},
+                    {label: 'Tipos Ordenes Atenciones', icon: 'pi pi-fw pi-tag', routerLink: ['/admin/tipos-ordenes-atenciones']},
                     {label: 'Vias', icon: 'pi pi-fw pi-map-marker', routerLink: ['/admin/vias']},
                     {label: 'Ubigeos', icon: 'pi pi-fw pi-map', routerLink: ['/admin/ubigeos']},
                     {label: 'Usuarios', icon: 'pi pi-fw pi-users', routerLink: ['/admin/usuarios']},

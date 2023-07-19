@@ -53,6 +53,13 @@ export class ViasService {
             );
     }
 
+    getViasSelect(){
+        return this.http.get(`${api_url}/vias/lista`, {
+            context: checkToken(),
+        });
+    }
+
+
     createVia(via: ViaInterface) {
         return this.http.post(`${api_url}/vias`, via, {
             context: checkToken(),

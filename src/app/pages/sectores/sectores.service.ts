@@ -52,6 +52,12 @@ export class SectoresService {
             );
     }
 
+    getSectoresSelect(){
+        return this.http.get(`${api_url}/sectores/lista`, {
+            context: checkToken(),
+        });
+    }
+
     createSector(sector: SectorInterface) {
         return this.http.post(`${api_url}/sectores`, sector, {
             context: checkToken(),

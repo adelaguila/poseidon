@@ -46,6 +46,11 @@ const routes: Routes = [
                     import("./sectores/sectores.module").then((m) => m.SectoresModule),
             },
             {
+                path: "tipos-ordenes-atenciones",
+                loadChildren: () =>
+                    import("./tipos-ordenes-atenciones/tipos-ordenes-atenciones.module").then((m) => m.TiposOrdenesAtencionesModule),
+            },
+            {
                 path: "abonados",
                 loadChildren: () =>
                     import("./abonados/abonados.module").then((m) => m.AbonadosModule),

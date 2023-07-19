@@ -1,0 +1,121 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-3 py-3">
+            <p-toast></p-toast>
+            <p-table #dt [value]="tiposOrdenesAtenciones" [lazy]="true" (onLazyLoad)="loadTiposOrdenesAtenciones($event)" dataKey="id"
+                styleClass="p-datatable-sm p-datatable-striped" [tableStyle]="{ 'min-width': '75rem' }"
+                [paginator]="true" [rows]="rows"
+                [totalRecords]="totalRecords" [loading]="loading" [showCurrentPageReport]="true"
+                [rowsPerPageOptions]="rowsPerPageOptions" [scrollable]="true" scrollHeight="600px"
+                currentPageReportTemplate="Mostrando {first} - {last} de {totalRecords} registros">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Mantenimiento de Tipos de Ordenes de Atenciones</h5>
+                        <div class="my-2">
+                            <button pButton pRipple label="Nuevo" icon="pi pi-plus"
+                                class="p-button-primary p-button-sm mr-2" (click)="openNew()"></button>
+                            <button pButton pRipple label="Exportar" icon="pi pi-file-excel"
+                                class="p-button-success p-button-sm mr-2" (click)="exportToExcel()"></button>
+                            <button pButton pRipple label="Imprimir" icon="pi pi-print"
+                                class="p-button-secondary p-button-sm" (click)="exportToPdf()"></button>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="min-width:120px;"  pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                        <th style="min-width:400px;" pSortableColumn="nombresector">Nombre de Tipo Orden de Ateción <p-sortIcon field="nombresector"></p-sortIcon></th>
+                        <th style="min-width:200px;" pSortableColumn="proceso">Nombre de Tipo Orden de Ateción <p-sortIcon field="proceso"></p-sortIcon></th>
+                        <th style="min-width:80px;"></th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p-columnFilter type="text" field="id" [matchModeOptions]="matchModeOptionsNumber"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th>
+                            <p-columnFilter type="text" field="nombretipoordenatencion" [matchModeOptions]="matchModeOptionsText"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th>
+                            <p-columnFilter type="text" field="proceso" [matchModeOptions]="matchModeOptionsText"
+                                [matchMode]="'startsWith'"></p-columnFilter>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-tipo>
+                    <tr>
+                        <td><span class="p-column-title">ID</span>
+                            {{tipo.id}}
+                        </td>
+                        <td >
+                            <span class="p-column-title">Nombre de Tipo de Orden Atención</span>
+                            {{tipo.nombretipoordenatencion}}
+                        </td>
+                        <td >
+                            <span class="p-column-title">Proceso</span>
+                            {{tipo.proceso}}
+                        </td>
+                        <td >
+                            <div class="flex">
+                                <p-button icon="pi pi-pencil" styleClass="p-button-info p-button-text" (click)="editTipoOrdenAtencion(tipo)"></p-button>
+                                <p-button icon="pi pi-trash" styleClass="p-button-danger p-button-text"  (click)="deleteTipoOrdenAtencion(tipo)"></p-button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="tipoOrdenAtencionDialog" [style]="{width: '450px', height: '400px'}" header="Tipo Orden Atención Detalles" [modal]="true"
+            class="p-fluid">
+            <ng-template pTemplate="content">
+                <form [formGroup]="tipoOrdenAtencionForm">
+                    <div class="formgrid grid" style="display:none">
+                        <div class="field col-3">
+                            <label for="sectorid">ID</label>
+                            <input type="text" pInputText id="tipoOrdenAtencionid" formControlName="id" readonly />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="nombrevia">Nombre Tipo de Orden Atención</label>
+                        <input type="text" pInputText id="nombretipoordenatencion" formControlName="nombretipoordenatencion"
+                            [ngClass]="{'ng-invalid ng-dirty' : isValidField('nombretipoordenatencion')}" />
+                        <small class="ng-dirty ng-invalid" *ngIf="isValidField('nombretipoordenatencion')">{{
+                            getFieldError('nombretipoordenatencion') }} </small>
+                    </div>
+                    <div class="field">
+                        <label for="proceso">Proceso</label>
+                        <p-dropdown [options]="procesos" formControlName="proceso" optionLabel="tipo"
+                        optionValue="codigo"
+                        [ngClass]="{'ng-invalid ng-dirty' : isValidField('proceso')}"></p-dropdown>
+                    <small class="ng-dirty ng-invalid" *ngIf="isValidField('proceso')">{{
+                        getFieldError('proceso') }} </small>
+                    </div>
+                </form>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary"
+                    (click)="saveTipoOrdenAtencion()" [disabled]="tipoOrdenAtencionForm.invalid"></button>
+                <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-secondary"
+                    (click)="hideDialog()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteTipoOrdenAtencionDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-question-circle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="tipoOrdenAtencion">¿Está seguro que desea eliminar el tipo de orden <b>{{tipoOrdenAtencion.nombretipoordenatencion}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-secondary" label="No"
+                    (click)="deleteSectorDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-danger" label="Si, Eliminar"
+                    (click)="confirmDelete()"></button>
+            </ng-template>
+        </p-dialog>
+
+    </div>
+</div>

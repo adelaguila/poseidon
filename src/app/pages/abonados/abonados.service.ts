@@ -51,7 +51,7 @@ export class AbonadosService {
     }
 
     createAbonado(abonado: AbonadoInterface) {
-        return this.http.post(`${api_url}/abonado`, abonado, {
+        return this.http.post(`${api_url}/abonados`, abonado, {
             context: checkToken(),
         });
     }
@@ -71,7 +71,7 @@ export class AbonadosService {
     autocompleteAbonado(term: string): Observable<AbonadoInterface[]> {
         return this.http
             .get<AbonadoInterface[]>(
-                `${api_url}/abonado/autocomplete/${term}`,
+                `${api_url}/abonados/autocomplete/${term}`,
                 {
                     context: checkToken(),
                 }

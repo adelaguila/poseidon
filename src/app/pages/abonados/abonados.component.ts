@@ -1,20 +1,48 @@
-import { Component, ViewChild } from '@angular/core';
-import { ConfirmationService, FilterMatchMode, LazyLoadEvent, MessageService, SelectItem } from 'primeng/api';
-import { Table } from 'primeng/table';
-import { AbonadoInterface } from './abonado.interface';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AbonadosService } from './abonados.service';
-import { Util } from 'src/app/utilities/util';
-import { ExcelService } from 'src/app/compartidos/servicios/excel.service';
-import { PdfService } from 'src/app/compartidos/servicios/pdf.service';
-import { ArchivoExcelInterface } from 'src/app/interfaces/excel.interface';
-import { CampoTable, PdfTableInterface } from 'src/app/interfaces/pdf.interface';
+import { Component, ViewChild } from "@angular/core";
+import {
+    ConfirmationService,
+    LazyLoadEvent,
+    MessageService,
+    SelectItem,
+} from "primeng/api";
+import { Table } from "primeng/table";
+import { AbonadoFormInterface, AbonadoInterface } from "./abonado.interface";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { AbonadosService } from "./abonados.service";
+import { Util } from "src/app/utilities/util";
+import { ExcelService } from "src/app/compartidos/servicios/excel.service";
+import { PdfService } from "src/app/compartidos/servicios/pdf.service";
+import { ArchivoExcelInterface } from "src/app/interfaces/excel.interface";
+import {
+    CampoTable,
+    PdfTableInterface,
+} from "src/app/interfaces/pdf.interface";
+import { ActivatedRoute, Router } from "@angular/router";
+import { UbigeosService } from "../ubigeos/ubigeos.service";
+import { ApimigoService } from "src/app/compartidos/servicios/apimigo.service";
+import { TercerosService } from "../terceros/terceros.service";
+import { UbigeoInterface } from "../ubigeos/ubigeo.interface";
+import { SectorInterface } from "../sectores/sector.interface";
+import { ViaInterface } from "../vias/via.interface";
+import { PlanInterface } from "../planes/plan.interface";
+import { CajanapInterface } from "../cajasnap/cajanap.interface";
+import { UsuarioInterface } from "../usuarios/usuario.interface";
+import { SectoresService } from "../sectores/sectores.service";
+import { ViasService } from "../vias/vias.service";
+import { CajasnapService } from "../cajasnap/cajasnap.service";
+import { UsuarioService } from "../usuarios/usuario.service";
+import { PlanesService } from "../planes/planes.service";
+import { TipoDoi } from "../terceros/tercero.interface";
+import {
+    MATCHMODEOPTIONSNUMBER,
+    MATCHMODEOPTIONSTEXT,
+} from "src/app/compartidos/servicios/parametros-filtros-tabla";
 
 @Component({
-  selector: 'app-abonados',
-  templateUrl: './abonados.component.html',
-  styleUrls: ['./abonados.component.scss'],
-  providers: [MessageService, ConfirmationService],
+    selector: "app-abonados",
+    templateUrl: "./abonados.component.html",
+    styleUrls: ["./abonados.component.scss"],
+    providers: [MessageService, ConfirmationService],
 })
 export class AbonadosComponent {
     @ViewChild("dt") table: Table;
@@ -33,77 +61,113 @@ export class AbonadosComponent {
     sortField: string;
     sortOrder: string;
 
+    ubigeosFiltrados = [];
+    sectores: SectorInterface[] = [];
+    vias: ViaInterface[] = [];
+    planes: PlanInterface[] = [];
+    cajasnap: CajanapInterface[] = [];
+    vendedores: UsuarioInterface[] = [];
+
     matchModeOptionsText: SelectItem[];
     matchModeOptionsNumber: SelectItem[];
     abonadoForm!: FormGroup;
+    abonadoFormulario: AbonadoFormInterface = {};
+    accionFrozen: boolean = true;
+    tiposDoi: TipoDoi[] | undefined;
+    estados!: any[];
+
     constructor(
         private abonadosService: AbonadosService,
+        private tercerosService: TercerosService,
+        private sectoresService: SectoresService,
+        private viasService: ViasService,
+        private cajasnapService: CajasnapService,
+        private usuariosService: UsuarioService,
+        private planesService: PlanesService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private util: Util,
         private excelService: ExcelService,
         private pdfService: PdfService,
-        private fb: FormBuilder
+        private fb: FormBuilder,
+        private router: Router,
+        private route: ActivatedRoute,
+        private ubigeosService: UbigeosService,
+        private apimigoService: ApimigoService
     ) {
         this.buildFormAbonado();
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: "id", header: "ID" },
-            { field: "numerodoi", header: "Nombre del Abonado" },
-            { field: "nombretercero", header: "Nombre del Abonado" },
-            { field: "nombresector", header: "Nombre del Abonado" },
-            { field: "nombrevia", header: "Nombre del Abonado" },
-            { field: "nombrevia", header: "Nombre del Abonado" },
-            { field: "numero", header: "Nombre del Abonado" },
-            { field: "referencia", header: "Nombre del Abonado" },
-            { field: "nombreplan", header: "Nombre del Abonado" },
-            { field: "nombrecajanap", header: "Nombre del Abonado" },
-            { field: "fecharegistro", header: "Nombre del Abonado" },
-            { field: "fechaactivacion", header: "Nombre del Abonado" },
-            { field: "fechaultimaliquidacion", header: "Nombre del Abonado" },
-            { field: "estado", header: "Nombre del Abonado" },
+        this.tiposDoi = [
+            { tipo: "DNI", codigo: "01" },
+            { tipo: "RUC", codigo: "06" },
         ];
 
-        this.matchModeOptionsText = [
-            { label: "Comienza con", value: FilterMatchMode.STARTS_WITH },
-            { label: "Contiene", value: FilterMatchMode.CONTAINS },
-            { label: "Es igual", value: FilterMatchMode.EQUALS },
+        this.loadSectores();
+        this.loadVias();
+        this.loadPlanes();
+        this.loadCajasNap();
+        this.loadVendedores();
+
+        this.cols = [
+            { field: "id", header: "ID" },
+            { field: "numerodoi", header: "Número DOI" },
+            { field: "nombretercero", header: "Nombre del Abonado" },
+            { field: "nombresector", header: "Sector" },
+            { field: "nombrevia", header: "Vía" },
+            { field: "numero", header: "Número" },
+            { field: "referencia", header: "Referencia" },
+            { field: "nombreplan", header: "Plan" },
+            { field: "nombrecajanap", header: "Caja Nap" },
+            { field: "fecharegistro", header: "F.Registro" },
+            { field: "fechaactivacion", header: "F.Activacion" },
+            { field: "fechaultimaliquidacion", header: "F.U.Liquidación" },
+            { field: "estado", header: "Estado" },
         ];
-        this.matchModeOptionsNumber = [
-            { label: "Comienza con", value: FilterMatchMode.STARTS_WITH },
-            { label: "Contiene", value: FilterMatchMode.CONTAINS },
-            { label: "Es igual", value: FilterMatchMode.EQUALS },
-            { label: "Menor que", value: FilterMatchMode.LESS_THAN },
-            {
-                label: "Menor o igual que",
-                value: FilterMatchMode.LESS_THAN_OR_EQUAL_TO,
-            },
-            { label: "Mayor que", value: FilterMatchMode.GREATER_THAN },
-            {
-                label: "Mayor o igual que",
-                value: FilterMatchMode.GREATER_THAN_OR_EQUAL_TO,
-            },
+
+        this.matchModeOptionsText = MATCHMODEOPTIONSTEXT;
+        this.matchModeOptionsNumber = MATCHMODEOPTIONSNUMBER;
+
+        this.estados = [
+            { label: "Por Instalar", value: "REGISTRADO" },
+            { label: "Activo", value: "ACTIVO" },
+            { label: "Cortado Temporal", value: "CORTADO-TEMPORAL" },
+            { label: "Cortado x Mora", value: "CORTADO-MORA" },
+            { label: "Cortado a Solucitud", value: "CORTADO-SOLICITUD" },
         ];
 
         this.loading = true;
     }
 
-    isValidField(field: string): boolean | null {
-        return (
-            this.abonadoForm.controls[field].errors &&
-            this.abonadoForm.controls[field].touched
-        );
+    getSeverity(estado: string) {
+        // console.log(estado);
+        switch (estado) {
+            case "Cortado x Mora":
+                return "danger";
+            case "Activo":
+                return "success";
+            case "Por Instalar":
+                return "info";
+            case "Cortado Temporal":
+                return "warning";
+            case "Cortado a Solucitud":
+                return "secondary";
+            default:
+                return null;
+        }
     }
 
-    getFieldError(field: string): string {
-        if (!this.abonadoForm.controls[field]) return null;
+    isValidField(form: FormGroup, field: string): boolean | null {
+        return form.controls[field].errors && form.controls[field].touched;
+    }
 
-        const errors = this.abonadoForm.controls[field].errors || {};
+    getFieldError(form: FormGroup, field: string): string {
+        if (!form.controls[field]) return null;
+
+        const errors = form.controls[field].errors || {};
 
         for (const key of Object.keys(errors)) {
-            console.log(key);
             switch (key) {
                 case "required":
                     return "Este campo es requerido";
@@ -115,18 +179,17 @@ export class AbonadosComponent {
     }
 
     buildFormAbonado() {
+        let fecha = new Date();
+        let desdeStr = `${fecha.getFullYear()}-${(
+            "0" +
+            (fecha.getMonth() + 1)
+        ).slice(-2)}-${fecha.getDate()}`;
         this.abonadoForm = this.fb.group({
-            id: [0],
+            id: 0,
+            terceroId: 0,
             tipodoi: ["01", [Validators.required]],
-            numerodoi: [
-                "",
-                [
-                    Validators.required,
-                    Validators.minLength(8),
-                    Validators.maxLength(11),
-                ],
-            ],
-            nombretercero: ["", [Validators.required, Validators.minLength(3)]],
+            numerodoi: ["", [Validators.required]],
+            nombretercero: ["", [Validators.required]],
             direccion: ["", [Validators.required, Validators.minLength(3)]],
             ubigeo: ["", [Validators.required]],
             correo: [""],
@@ -137,7 +200,14 @@ export class AbonadosComponent {
             referencia: [""],
             plan: ["", [Validators.required]],
             cajanap: ["", [Validators.required]],
-            fecharegistro: ["", [Validators.required]],
+            ont: [""],
+            latitud: [""],
+            longitud: [""],
+            estado: ["REGISTRADO"],
+            vendedor: ["", [Validators.required]],
+            fecharegistro: [desdeStr],
+            fechaactivacion: [Date],
+            fechaultimaliquidacion: [Date],
         });
     }
 
@@ -180,6 +250,9 @@ export class AbonadosComponent {
                 this.abonados = res.data;
                 this.totalRecords = res.meta.totalItems;
                 this.loading = false;
+                this.abonados.map((el) => {
+                    el.vianumero = `${el.via.nombrevia} ${el.numero}`;
+                })
             });
     }
 
@@ -187,12 +260,16 @@ export class AbonadosComponent {
         this.abonado = {};
         this.submitted = false;
         this.abonadoDialog = true;
+        // this.router.navigate(["formulario", 0], {
+        //     relativeTo: this.route,
+        // });
     }
 
     editAbonado(abonado: AbonadoInterface) {
-        this.abonado = abonado ;
-        this.abonadoForm.patchValue(this.abonado);
-        this.abonadoDialog = true;
+        this.abonado = abonado;
+        this.router.navigate(["formulario", abonado.id], {
+            relativeTo: this.route,
+        });
     }
 
     deleteAbonado(abonado: AbonadoInterface) {
@@ -202,22 +279,24 @@ export class AbonadosComponent {
 
     confirmDelete() {
         this.deleteAbonadoDialog = false;
-        this.abonadosService.deleteAbonado(this.abonado.id).subscribe((resp) => {
-            this.messageService.add({
-                severity: "success",
-                summary: "Successful",
-                detail: "Abonado eliminado con éxito",
-                life: 3000,
+        this.abonadosService
+            .deleteAbonado(this.abonado.id)
+            .subscribe((resp) => {
+                this.messageService.add({
+                    severity: "success",
+                    summary: "Successful",
+                    detail: "Abonado eliminado con éxito",
+                    life: 3000,
+                });
+                this.abonado = {};
+                this.getPage(
+                    this.currentPage,
+                    this.rows,
+                    this.sortField,
+                    this.sortOrder,
+                    this._filterPage
+                );
             });
-            this.abonado = {};
-            this.getPage(
-                this.currentPage,
-                this.rows,
-                this.sortField,
-                this.sortOrder,
-                this._filterPage
-            );
-        });
     }
 
     hideDialog() {
@@ -226,72 +305,202 @@ export class AbonadosComponent {
         this.abonadoForm.reset();
     }
 
+    buscarMigo() {
+        this.abonadoFormulario = this.abonadoForm.value;
+        if (
+            this.abonadoFormulario.tipodoi == "01" &&
+            this.abonadoFormulario.numerodoi.length != 8
+        ) {
+            this.messageService.add({
+                severity: "info",
+                summary: "Atención",
+                detail: "Número de DNI inválido",
+                life: 3000,
+            });
+            return;
+        }
+        if (
+            this.abonadoFormulario.tipodoi == "06" &&
+            this.abonadoFormulario.numerodoi.length != 11
+        ) {
+            this.messageService.add({
+                severity: "info",
+                summary: "Atención",
+                detail: "Número de RUC inválido",
+                life: 3000,
+            });
+            return;
+        }
+        this.tercerosService
+            .getByDoi(this.abonadoFormulario.numerodoi)
+            .subscribe((resp: any) => {
+                if (resp.statusCode === 404) {
+                    if (
+                        this.abonadoFormulario.tipodoi == "01" &&
+                        this.abonadoFormulario.numerodoi.length == 8
+                    ) {
+                        this.apimigoService
+                            .consultarDNI(this.abonadoFormulario.numerodoi)
+                            .then((resp) => {
+                                this.abonadoForm.controls[
+                                    "nombretercero"
+                                ].setValue(resp.nombre);
+                            });
+                    } else if (
+                        this.abonadoFormulario.tipodoi === "06" &&
+                        this.abonadoFormulario.numerodoi.length == 11
+                    ) {
+                        this.apimigoService
+                            .consultarRUC(this.abonadoFormulario.numerodoi)
+                            .then((resp) => {
+                                this.abonadoForm.controls[
+                                    "nombretercero"
+                                ].setValue(resp.nombre_o_razon_social);
+                                this.abonadoForm.controls["direccion"].setValue(
+                                    resp.direccion_simple
+                                );
+                                this.ubigeosService
+                                    .getByCodigo(resp.ubigeo)
+                                    .subscribe((ubigeo: UbigeoInterface) => {
+                                        ubigeo.nombreUbigeo = `${ubigeo.distrito} - ${ubigeo.provincia} - ${ubigeo.departamento}`;
+                                        this.abonadoForm.controls[
+                                            "ubigeo"
+                                        ].setValue(ubigeo);
+                                    });
+                            });
+                    } else {
+                        console.log("numero de doi inválido");
+                    }
+                } else {
+                    this.abonadoForm.controls["terceroId"].setValue(
+                        resp.tercero.id
+                    );
+                    this.abonadoForm.controls["nombretercero"].setValue(
+                        resp.tercero.nombretercero
+                    );
+                    this.abonadoForm.controls["direccion"].setValue(
+                        resp.direccion.direccion
+                    );
+                    this.abonadoForm.controls["correo"].setValue(
+                        resp.tercero.correo
+                    );
+                    this.abonadoForm.controls["telefono"].setValue(
+                        resp.tercero.telefono
+                    );
+                    let ubigeo: UbigeoInterface = resp.direccion.ubigeo;
+                    ubigeo.nombreUbigeo = `${ubigeo.distrito} - ${ubigeo.provincia} - ${ubigeo.departamento}`;
+                    this.abonadoForm.controls["ubigeo"].setValue(ubigeo);
+                }
+            });
+    }
+
+    filtrarUbigeos(event: any) {
+        this.ubigeosService
+            .autocompleteUbigeo(event.query)
+            .subscribe((result) => {
+                this.ubigeosFiltrados = result;
+            });
+    }
+
+    loadSectores() {
+        this.sectoresService
+            .getSectoresSelect()
+            .subscribe((result: SectorInterface[]) => {
+                this.sectores = result;
+            });
+    }
+
+    loadVias() {
+        this.viasService.getViasSelect().subscribe((result: ViaInterface[]) => {
+            this.vias = result;
+        });
+    }
+
+    loadPlanes() {
+        this.planesService
+            .getPlanesSelect()
+            .subscribe((result: PlanInterface[]) => {
+                this.planes = result;
+            });
+    }
+
+    loadCajasNap() {
+        this.cajasnapService
+            .getCajasnapSelect()
+            .subscribe((result: CajanapInterface[]) => {
+                this.cajasnap = result;
+            });
+    }
+
+    loadVendedores() {
+        this.usuariosService
+            .getUsuariosSelect()
+            .subscribe((result: UsuarioInterface[]) => {
+                this.vendedores = result;
+            });
+    }
+
     saveAbonado() {
         if (this.abonadoForm.invalid) {
             this.abonadoForm.markAllAsTouched();
             return;
         } else {
-            this.abonado = this.abonadoForm.value;
-            this.submitted = true;
-            if (this.abonado.tercero.nombretercero?.trim()) {
-                if (this.abonado.id) {
-                    this.abonadosService.updateAbonado(this.abonado).subscribe({
-                        next: () => {
-                            this.getPage(
-                                this.currentPage,
-                                this.rows,
-                                this.sortField,
-                                this.sortOrder,
-                                this._filterPage
-                            );
-                            this.messageService.add({
-                                severity: "success",
-                                summary: "Successful",
-                                detail: "Abonado actualizado correctamente",
-                                life: 3000,
-                            });
-                        },
-                        error: (error) => {
-                            this.messageService.add({
-                                severity: "error",
-                                summary: "Error",
-                                detail: "Algo salió mal, no se guardaron los cambios",
-                                life: 3000,
-                            });
-                        },
+            let abonado = { ...this.abonadoForm.value };
+            console.log(abonado);
+            let datos: any = {
+                id: abonado.id,
+                terceroId: abonado.terceroId,
+                tipodoi: abonado.tipodoi,
+                numerodoi: abonado.numerodoi,
+                nombretercero: abonado.nombretercero,
+                direccion: abonado.direccion,
+                ubigeoId: abonado.ubigeo.id,
+                correo: abonado.correo,
+                telefono: abonado.telefono,
+                sectorId: abonado.sector,
+                viaId: abonado.via,
+                numero: abonado.numero,
+                referencia: abonado.referencia,
+                planId: abonado.plan,
+                cajanapId: abonado.cajanap,
+                ont: abonado.ont,
+                latitud: 0,
+                longitud: 0,
+                estado: "REGISTRADO",
+                vendedorId: abonado.vendedor,
+                fecharegistro: abonado.fecharegistro,
+            };
+
+            this.abonadosService.createAbonado(datos).subscribe({
+                next: () => {
+                    this.getPage(
+                        this.currentPage,
+                        this.rows,
+                        this.sortField,
+                        this.sortOrder,
+                        this._filterPage
+                    );
+                    this.messageService.add({
+                        severity: "success",
+                        summary: "Successful",
+                        detail: "Abonado creado correctamente",
+                        life: 3000,
                     });
-                } else {
-                    this.abonado.id = 0;
-                    this.abonadosService.createAbonado(this.abonado).subscribe({
-                        next: () => {
-                            this.getPage(
-                                this.currentPage,
-                                this.rows,
-                                this.sortField,
-                                this.sortOrder,
-                                this._filterPage
-                            );
-                            this.messageService.add({
-                                severity: "success",
-                                summary: "Successful",
-                                detail: "Abonado creado correctamente",
-                                life: 3000,
-                            });
-                        },
-                        error: (error) => {
-                            this.messageService.add({
-                                severity: "error",
-                                summary: "Error",
-                                detail: "Algo salió mal, no se guardaron los cambios",
-                                life: 3000,
-                            });
-                        },
+                },
+                error: (error) => {
+                    this.messageService.add({
+                        severity: "error",
+                        summary: "Error",
+                        detail: "Algo salió mal, no se guardaron los cambios",
+                        life: 3000,
                     });
-                }
-                this.abonadoDialog = false;
-                this.abonadoForm.reset();
-                this.abonado = {};
-            }
+                },
+            });
+
+            this.abonadoDialog = false;
+            this.abonadoForm.reset();
+            this.abonado = {};
+            // }
         }
     }
 
@@ -344,7 +553,9 @@ export class AbonadosComponent {
                                 "CAJA NAP",
                                 "ESTADO",
                             ],
-                            anchoColumnas: [20, 40, 60, 50, 50, 40, 50, 50, 50, 20],
+                            anchoColumnas: [
+                                20, 40, 60, 50, 50, 40, 50, 50, 50, 20,
+                            ],
                             alineacionColumnas: [
                                 {
                                     horizontal: "left",
@@ -445,7 +656,18 @@ export class AbonadosComponent {
                     layout: "", //'lightHorizontalLines',
                     table: {
                         headerRow: 1,
-                        widths: [50, "auto", "auto", "auto", "auto", "auto", "auto", "auto", "auto", "auto"],
+                        widths: [
+                            50,
+                            "auto",
+                            "auto",
+                            "auto",
+                            "auto",
+                            "auto",
+                            "auto",
+                            "auto",
+                            "auto",
+                            "auto",
+                        ],
                         body: {
                             headers: [
                                 "ID",
@@ -468,7 +690,7 @@ export class AbonadosComponent {
                     "reporte_abonados",
                     "REPORTE DE VIAS",
                     "A4",
-                    "landscape",
+                    "landscape"
                 );
             });
     }
