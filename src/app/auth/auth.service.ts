@@ -43,7 +43,7 @@ export class AuthService {
                     const {
                         id,
                         email,
-                        fullName,
+                        name,
                         isActive,
                         image,
                         roles,
@@ -51,7 +51,7 @@ export class AuthService {
                     } = resp.usuario;
                     this.usuario = new Usuario(
                         email,
-                        fullName,
+                        name,
                         isActive,
                         "",
                         google,

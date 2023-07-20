@@ -6,7 +6,7 @@ const frontUrl = environment.front_url;
 export class Usuario {
     constructor(
         public email: string,
-        public fullName: string,
+        public name: string,
         public isActive: boolean,
         public roles: string,
         public password?: string,

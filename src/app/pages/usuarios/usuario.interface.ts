@@ -1,6 +1,6 @@
 export interface UsuarioInterface {
     id?: string;
-    fullName?: string;
+    name?: string;
     email?: string;
     roles?: string;
     password?: number;
